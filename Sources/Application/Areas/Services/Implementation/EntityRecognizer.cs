@@ -17,26 +17,37 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
         {
             var client = new TextAnalyticsClient(
                 new Uri(settingsProvider.AppSettings.TextAnalyticsEndpoint),
-                new AzureKeyCredential(settingsProvider.AppSettings.TextAnalyticsEndpoint));
+                new AzureKeyCredential(settingsProvider.AppSettings.TextAnalyticsApiKey));
+
+            var resultEntries = new List<EntityRecognitionResultEntry>();
 
             foreach (var transformation in transformations)
             {
-                var groupedText = Extensions.CustomChunk(transformation.Content, 5000);
+                var groupedText = Extensions
+                    .CustomChunk(transformation.Content, 5000)
+                    .ToList();
+
+                var chunkCount = groupedText.Count();
+                var cnt = 1;
                 foreach (var grp in groupedText)
                 {
-                    var response = await client.RecognizeEntitiesAsync(grp, "de");
-                    Console.WriteLine("Named Entities:");
-                    var skills = response.Value.Where(f => f.Category == "Skill");
+                    infoEntries.Add($"Analysiere Chunk {cnt++}/{chunkCount} der Datei {transformation.FileName}..");
 
-                    foreach (var entity in skills)
+                    var response = await client.RecognizeEntitiesAsync(grp, "de");
+
+                    foreach (var entry in response.Value)
                     {
-                        Console.WriteLine($"\tText: {entity.Text},\tCategory: {entity.Category},\tSub-Category: {entity.SubCategory}");
-                        Console.WriteLine($"\t\tScore: {entity.ConfidenceScore:F2},\tLength: {entity.Length},\tOffset: {entity.Offset}\n");
+                        resultEntries.Add(new EntityRecognitionResultEntry(
+                            entry.Category.ToString(),
+                            entry.SubCategory,
+                            entry.Text,
+                            entry.ConfidenceScore,
+                            transformation.FilePath));
                     }
                 }
             }
 
-            return null;
+            return new EntityRecognitionResult(resultEntries);
         }
     }
 }

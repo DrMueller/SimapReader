@@ -27,7 +27,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             {
                 await using var stream = new FileStream(wordFilePath, FileMode.Open, FileAccess.Read);
 
-                infoEntries.Add($"Analysiere {Path.GetFileName(wordFilePath)}..");
+                infoEntries.Add($"Transformiere {Path.GetFileName(wordFilePath)}..");
 
                 var operation = await client.AnalyzeDocumentAsync(
                     WaitUntil.Completed,

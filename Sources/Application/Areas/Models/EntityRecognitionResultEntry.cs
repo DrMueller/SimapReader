@@ -2,6 +2,8 @@
 {
     public record EntityRecognitionResultEntry(
         string Category,
+        string SubCategory,
         string RecognizedWord,
-        double Confidence);
+        double Confidence,
+        string WordFilePath);
 }

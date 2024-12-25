@@ -20,6 +20,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 unzipFilePath = unzipResult.UnzipFilePath;
                 var transformedWords = await wordTransformer.TransformWordsAsyncs(infoEntries, unzipResult.UnzipFilePath);
                 var recognizedEntities = await recognizer.RecognizeAsync(infoEntries, transformedWords);
+                here dispaly recognized entities
             }
             catch (Exception ex)
             {
