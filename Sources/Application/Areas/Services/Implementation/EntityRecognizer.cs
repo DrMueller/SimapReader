@@ -38,11 +38,11 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                     foreach (var entry in response.Value)
                     {
                         resultEntries.Add(new EntityRecognitionResultEntry(
-                            entry.Category.ToString(),
-                            entry.SubCategory,
-                            entry.Text,
+                            entry.Category.ToString().Trim(),
+                            entry.SubCategory?.Trim() ?? string.Empty,
+                            entry.Text.Trim(),
                             entry.ConfidenceScore,
-                            transformation.FilePath));
+                            transformation.FilePath.Trim()));
                     }
                 }
             }

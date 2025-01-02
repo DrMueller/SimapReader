@@ -3,24 +3,22 @@ using JetBrains.Annotations;
 using Mmu.Mlh.WpfCoreExtensions.Areas.MvvmShell.CommandManagement.Components.CommandBars.ViewData;
 using Mmu.Mlh.WpfCoreExtensions.Areas.MvvmShell.ViewModels;
 using Mmu.Mlh.WpfCoreExtensions.Areas.MvvmShell.ViewModels.Behaviors;
+using Mmu.Mlh.WpfCoreExtensions.Areas.MvvmShell.ViewModels.Services;
 using Mmu.Mlh.WpfCoreExtensions.Areas.ViewExtensions.Grids.InformationGrids.ViewData;
+using Mmu.SimapReader.Areas.Views.NerResults;
 using Mmu.SimapReader.Infrastructure.Informations;
 
-namespace Mmu.SimapReader.Areas.Views
+namespace Mmu.SimapReader.Areas.Views.Overview
 {
-    [UsedImplicitly]
-    public class OrchestrationViewModel : ViewModelBase, IInitializableViewModel, INavigatableViewModel
+    [PublicAPI]
+    public class OrchestrationViewModel(
+        IViewModelFactory vmFactory,
+        CommandContainer commandContainer)
+        : ViewModelBase, IInitializableViewModel, INavigatableViewModel
     {
-        private readonly CommandContainer _commandContainer;
+        private string _selectedZipFile = string.Empty;
 
-        private string _selectedZipFile;
-
-        public OrchestrationViewModel(CommandContainer commandContainer)
-        {
-            _commandContainer = commandContainer;
-        }
-
-        public CommandsViewData Commands => _commandContainer.Commands;
+        public CommandsViewData Commands => commandContainer.Commands;
 
         public string HeadingDescription => "Zip Upload";
         public InformationEntries InfoEntries { get; } = new();
@@ -28,6 +26,8 @@ namespace Mmu.SimapReader.Areas.Views
         public ObservableCollection<InformationGridEntryViewData> InformationEntries => InfoEntries.Collection;
         public string NavigationDescription => "Zip Upload";
         public int NavigationSequence => 1;
+
+        public NerResultsViewModel NerResultsViewVm { get; private set; } = default!;
 
         public string SelectedZipFile
         {
@@ -37,7 +37,8 @@ namespace Mmu.SimapReader.Areas.Views
 
         public async Task InitializeAsync(params object[] initParams)
         {
-            await _commandContainer.InitializeAsync(this);
+            NerResultsViewVm = await vmFactory.CreateAsync<NerResultsViewModel>();
+            await commandContainer.InitializeAsync(this);
         }
     }
 }

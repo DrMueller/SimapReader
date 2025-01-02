@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using JetBrains.Annotations;
+using Mmu.SimapReader.Areas.ViewModels;
 using Mmu.SimapReader.Infrastructure.Informations;
 
 namespace Mmu.SimapReader.Areas.Services.Implementation
@@ -8,19 +9,26 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
     public class Orchestrator(
         IUnzipService unzipper,
         IWordTransformer wordTransformer,
-        IEntityRecognizer recognizer)
+        IEntityRecognizer recognizer,
+        IResultAdapter resultAdapter)
         : IOrchestrator
     {
-        public async Task ProcessAsync(InformationEntries infoEntries, string zipFilePath)
+        public async Task<IReadOnlyCollection<EntityRecognitionResultEntryViewModel>> ProcessAsync(InformationEntries infoEntries, string zipFilePath)
         {
             string? unzipFilePath = null;
             try
             {
                 var unzipResult = await unzipper.UnzipAsync(infoEntries, zipFilePath);
+                
+                if (!unzipResult.WasSuccess)
+                {
+                    infoEntries.Add($"Unzipping to '{zipFilePath}' failed.");
+                }
+                
                 unzipFilePath = unzipResult.UnzipFilePath;
                 var transformedWords = await wordTransformer.TransformWordsAsyncs(infoEntries, unzipResult.UnzipFilePath);
-                var recognizedEntities = await recognizer.RecognizeAsync(infoEntries, transformedWords);
-                here dispaly recognized entities
+                var result = await recognizer.RecognizeAsync(infoEntries, transformedWords);
+                return resultAdapter.Adapt(result);
             }
             catch (Exception ex)
             {
@@ -34,6 +42,8 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                     Directory.Delete(unzipFilePath, true);
                 }
             }
+
+            return new List<EntityRecognitionResultEntryViewModel>();
         }
     }
 }
