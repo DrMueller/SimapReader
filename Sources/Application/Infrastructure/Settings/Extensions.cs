@@ -6,12 +6,12 @@
         {
             if (null == value)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             if (chunkSize <= 0)
             {
-                throw new ArgumentOutOfRangeException("chunkSize", "Chunk size should be positive");
+                throw new ArgumentOutOfRangeException(nameof(chunkSize), "Chunk size should be positive");
             }
 
             return Enumerable

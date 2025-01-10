@@ -13,7 +13,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
     {
         public async Task<EntityRecognitionResult> RecognizeAsync(
             InformationEntries infoEntries,
-            IReadOnlyCollection<WordTransformations> transformations)
+            IReadOnlyCollection<FileTransformations> transformations)
         {
             var client = new TextAnalyticsClient(
                 new Uri(settingsProvider.AppSettings.TextAnalyticsEndpoint),
@@ -27,11 +27,11 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                     .CustomChunk(transformation.Content, 5000)
                     .ToList();
 
-                var chunkCount = groupedText.Count();
+                var chunkCount = groupedText.Count;
                 var cnt = 1;
                 foreach (var grp in groupedText)
                 {
-                    infoEntries.Add($"Analysiere Chunk {cnt++}/{chunkCount} der Datei {transformation.FileName}..");
+                    infoEntries.Add($"Analyzing chunk {cnt++}/{chunkCount} of file {transformation.FileName}..");
 
                     var response = await client.RecognizeEntitiesAsync(grp, "de");
 

@@ -9,25 +9,25 @@ using Mmu.SimapReader.Infrastructure.Settings.Provisioning.Services;
 namespace Mmu.SimapReader.Areas.Services.Implementation
 {
     [UsedImplicitly]
-    public class WordTransformer(ISettingsProvider settingsProvider) : IWordTransformer
+    public class FileTransformer(ISettingsProvider settingsProvider) : IFileTransformer
     {
-        public async Task<IReadOnlyCollection<WordTransformations>> TransformWordsAsyncs(
+        public async Task<IReadOnlyCollection<FileTransformations>> TransformFilesAsync(
             InformationEntries infoEntries,
-            string wordsFilePath)
+            string documentsFilePath)
         {
             var client = new DocumentIntelligenceClient(
                 new Uri(settingsProvider.AppSettings.DocumentIntelligenceEndpoint),
                 new AzureKeyCredential(settingsProvider.AppSettings.DocumentIntelligenceApiKey));
 
-            var wordFiles = Directory.GetFiles(wordsFilePath, "*.docx", SearchOption.AllDirectories);
+            var wordFiles = Directory.GetFiles(documentsFilePath, "*.docx", SearchOption.AllDirectories);
 
-            var result = new List<WordTransformations>();
+            var result = new List<FileTransformations>();
 
             foreach (var wordFilePath in wordFiles)
             {
                 await using var stream = new FileStream(wordFilePath, FileMode.Open, FileAccess.Read);
 
-                infoEntries.Add($"Transformiere {Path.GetFileName(wordFilePath)}..");
+                infoEntries.Add($"Transforming {Path.GetFileName(wordFilePath)}..");
 
                 var operation = await client.AnalyzeDocumentAsync(
                     WaitUntil.Completed,
@@ -36,7 +36,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
 
                 await operation.WaitForCompletionAsync();
 
-                result.Add(new WordTransformations(
+                result.Add(new FileTransformations(
                     wordFilePath,
                     operation.Value.Content));
             }

@@ -8,12 +8,14 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
     [UsedImplicitly]
     public class Orchestrator(
         IUnzipService unzipper,
-        IWordTransformer wordTransformer,
+        IFileTransformer fileTransformer,
         IEntityRecognizer recognizer,
         IResultAdapter resultAdapter)
         : IOrchestrator
     {
-        public async Task<IReadOnlyCollection<EntityRecognitionResultEntryViewModel>> ProcessAsync(InformationEntries infoEntries, string zipFilePath)
+        public async Task<IReadOnlyCollection<EntityRecognitionResultEntryViewModel>> ProcessAsync(
+            InformationEntries infoEntries, 
+            string zipFilePath)
         {
             string? unzipFilePath = null;
             try
@@ -26,7 +28,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 }
                 
                 unzipFilePath = unzipResult.UnzipFilePath;
-                var transformedWords = await wordTransformer.TransformWordsAsyncs(infoEntries, unzipResult.UnzipFilePath);
+                var transformedWords = await fileTransformer.TransformFilesAsync(infoEntries, unzipResult.UnzipFilePath);
                 var result = await recognizer.RecognizeAsync(infoEntries, transformedWords);
                 return resultAdapter.Adapt(result);
             }

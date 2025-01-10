@@ -3,9 +3,9 @@ using Mmu.Mlh.LanguageExtensions.Areas.Invariance;
 
 namespace Mmu.SimapReader.Areas.Models
 {
-    public class WordTransformations
+    public class FileTransformations
     {
-        public WordTransformations(
+        public FileTransformations(
             string filePath,
             string content)
         {

@@ -7,6 +7,6 @@ namespace Mmu.SimapReader.Areas.Services
     {
         Task<EntityRecognitionResult> RecognizeAsync(
             InformationEntries infoEntries,
-            IReadOnlyCollection<WordTransformations> transformations);
+            IReadOnlyCollection<FileTransformations> transformations);
     }
 }

@@ -5,7 +5,7 @@ namespace Mmu.SimapReader.Infrastructure.Informations
 {
     public class InformationEntries
     {
-        public ObservableCollection<InformationGridEntryViewData> Collection { get; } = new();
+        public ObservableCollection<InformationGridEntryViewData> Collection { get; } = [];
 
         public void Add(string value)
         {

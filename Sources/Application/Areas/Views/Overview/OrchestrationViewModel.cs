@@ -20,11 +20,11 @@ namespace Mmu.SimapReader.Areas.Views.Overview
 
         public CommandsViewData Commands => commandContainer.Commands;
 
-        public string HeadingDescription => "Zip Upload";
+        public string HeadingDescription => "SIMAPReader";
         public InformationEntries InfoEntries { get; } = new();
 
         public ObservableCollection<InformationGridEntryViewData> InformationEntries => InfoEntries.Collection;
-        public string NavigationDescription => "Zip Upload";
+        public string NavigationDescription => "SIMAPReader";
         public int NavigationSequence => 1;
 
         public NerResultsViewModel NerResultsViewVm { get; private set; } = default!;

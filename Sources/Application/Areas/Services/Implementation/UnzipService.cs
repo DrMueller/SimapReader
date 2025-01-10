@@ -15,7 +15,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             var subDir = "SIMAPREader_Import_" + Guid.NewGuid();
             var fullDir = Path.Combine(tempPath, subDir);
 
-            infoEntries.Add($"Ungezippt zu {fullDir}..");
+            infoEntries.Add($"Unzipped to {fullDir}..");
 
             if (!Directory.Exists(fullDir))
             {

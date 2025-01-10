@@ -3,10 +3,10 @@ using Mmu.SimapReader.Infrastructure.Informations;
 
 namespace Mmu.SimapReader.Areas.Services
 {
-    public interface IWordTransformer
+    public interface IFileTransformer
     {
-        Task<IReadOnlyCollection<WordTransformations>> TransformWordsAsyncs(
+        Task<IReadOnlyCollection<FileTransformations>> TransformFilesAsync(
             InformationEntries infoEntries,
-            string wordsFilePath);
+            string documentsFilePath);
     }
 }
