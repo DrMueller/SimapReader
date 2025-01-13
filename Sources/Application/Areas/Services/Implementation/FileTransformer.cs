@@ -19,7 +19,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 new Uri(settingsProvider.AppSettings.DocumentIntelligenceEndpoint),
                 new AzureKeyCredential(settingsProvider.AppSettings.DocumentIntelligenceApiKey));
 
-            var wordFiles = Directory.GetFiles(documentsFilePath, "*.docx", SearchOption.AllDirectories);
+            var wordFiles = Directory.GetFiles(documentsFilePath, "*.*", SearchOption.AllDirectories);
             var result = new List<FileTransformations>();
 
             foreach (var wordFilePath in wordFiles)
