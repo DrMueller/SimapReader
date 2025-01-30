@@ -3,7 +3,6 @@ using Azure.AI.TextAnalytics;
 using JetBrains.Annotations;
 using Mmu.SimapReader.Areas.Models;
 using Mmu.SimapReader.Infrastructure.Informations;
-using Mmu.SimapReader.Infrastructure.Settings;
 using Mmu.SimapReader.Infrastructure.Settings.Provisioning.Services;
 
 namespace Mmu.SimapReader.Areas.Services.Implementation
@@ -15,37 +14,60 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             InformationEntries infoEntries,
             IReadOnlyCollection<FileTransformations> transformations)
         {
+            infoEntries.Add("Starting recognizing..");
+
             var client = new TextAnalyticsClient(
                 new Uri(settingsProvider.AppSettings.TextAnalyticsEndpoint),
                 new AzureKeyCredential(settingsProvider.AppSettings.TextAnalyticsApiKey));
 
-            var resultEntries = new List<EntityRecognitionResultEntry>();
+            const string projectName = "CAS3";
+            const string deploymentName = "CASModel";
 
+            var actions = new TextAnalyticsActions
+            {
+                RecognizeCustomEntitiesActions = new List<RecognizeCustomEntitiesAction>
+                {
+                    new(projectName, deploymentName)
+                }
+            };
+
+            var documentInputs = new List<TextDocumentInput>();
+            var i = 0;
             foreach (var transformation in transformations)
             {
-                var groupedText = Extensions
-                    .CustomChunk(transformation.Content, 5000)
-                    .ToList();
+                i++;
+                documentInputs.Add(new TextDocumentInput(i.ToString(), transformation.Content));
+            }
 
-                var chunkCount = groupedText.Count;
-                var cnt = 1;
-                foreach (var grp in groupedText)
+            var chunkedInputs = documentInputs.Chunk(25);
+            var resultEntries = new List<EntityRecognitionResultEntry>();
+
+            foreach (var inputs in chunkedInputs)
+            {
+                var operation = await client.StartAnalyzeActionsAsync(inputs, actions);
+                await operation.WaitForCompletionAsync();
+
+                await foreach (var documentsInPage in operation.Value)
                 {
-                    infoEntries.Add($"Analyzing chunk {cnt++}/{chunkCount} of file {transformation.FileName}..");
-
-                    var response = await client.RecognizeEntitiesAsync(grp, "de");
-
-                    foreach (var entry in response.Value)
+                    IReadOnlyCollection<RecognizeCustomEntitiesActionResult> customEntitiesActionResults = documentsInPage.RecognizeCustomEntitiesResults;
+                    foreach (var customEntitiesActionResult in customEntitiesActionResults)
                     {
-                        resultEntries.Add(new EntityRecognitionResultEntry(
-                            entry.Category.ToString().Trim(),
-                            entry.SubCategory?.Trim() ?? string.Empty,
-                            entry.Text.Trim(),
-                            entry.ConfidenceScore,
-                            transformation.FilePath.Trim()));
+                        foreach (var documentResults in customEntitiesActionResult.DocumentsResults)
+                        {
+                            foreach (var entity in documentResults.Entities)
+                            {
+                                resultEntries.Add(new EntityRecognitionResultEntry(
+                                    entity.Category.ToString().Trim(),
+                                    entity.SubCategory?.Trim() ?? string.Empty,
+                                    entity.Text.Trim(),
+                                    entity.ConfidenceScore));
+                            }
+                        }
                     }
                 }
             }
+
+            infoEntries.Add("Recognizing done..");
 
             return new EntityRecognitionResult(resultEntries);
         }

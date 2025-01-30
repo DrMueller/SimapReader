@@ -29,6 +29,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             result = result
                 .OrderByDescending(f => f.AverageConfidence)
                 .ThenByDescending(f => f.FoundAmount)
+                .ThenBy(f => f.RecognizedWord)
                 .ThenBy(f => f.Category)
                 .ToList();
 

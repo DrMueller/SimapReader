@@ -7,6 +7,5 @@ namespace Mmu.SimapReader.Areas.Models
         string Category,
         string SubCategory,
         string RecognizedWord,
-        double Confidence,
-        string WordFilePath);
+        double Confidence);
 }

@@ -19,14 +19,14 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 new Uri(settingsProvider.AppSettings.DocumentIntelligenceEndpoint),
                 new AzureKeyCredential(settingsProvider.AppSettings.DocumentIntelligenceApiKey));
 
-            var wordFiles = Directory.GetFiles(documentsFilePath, "*.*", SearchOption.AllDirectories);
+            var filePaths = Directory.GetFiles(documentsFilePath, "*.*", SearchOption.AllDirectories);
             var result = new List<FileTransformations>();
 
-            foreach (var wordFilePath in wordFiles)
+            foreach (var filePath in filePaths)
             {
-                await using var stream = new FileStream(wordFilePath, FileMode.Open, FileAccess.Read);
+                await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
-                infoEntries.Add($"Transforming {Path.GetFileName(wordFilePath)}..");
+                infoEntries.Add($"Transforming {Path.GetFileName(filePath)}..");
 
                 var operation = await client.AnalyzeDocumentAsync(
                     WaitUntil.Completed,
@@ -36,7 +36,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 await operation.WaitForCompletionAsync();
 
                 result.Add(new FileTransformations(
-                    wordFilePath,
+                    filePath,
                     operation.Value.Content));
             }
 

@@ -12,7 +12,8 @@ namespace Mmu.SimapReader.Areas.Views.Overview
     public class CommandContainer(
         IOrchestrator orchestrator,
         IFileDownloader fileDownloader,
-        IInformationPublisher infoPublisher)
+        IInformationPublisher infoPublisher,
+        ITextFileFactory textFileFactory)
         : IViewModelCommandContainer<OrchestrationViewModel>
     {
         private OrchestrationViewModel _context = default!;
@@ -20,6 +21,18 @@ namespace Mmu.SimapReader.Areas.Views.Overview
         private bool _isRunning;
 
         public CommandsViewData Commands { get; private set; } = default!;
+
+        private IViewModelCommand CreateTextFiles
+        {
+            get
+            {
+                return new ViewModelCommand(
+                    "Create Text files",
+                    new AsyncRelayCommand(
+                        async () => { await textFileFactory.CreateAllAsync(_context.InfoEntries); }
+                    ));
+            }
+        }
 
         private IViewModelCommand DownloadLogs
         {
@@ -71,6 +84,7 @@ namespace Mmu.SimapReader.Areas.Views.Overview
             _context = context;
 
             Commands = new CommandsViewData(
+                //CreateTextFiles,
                 StartRecognition,
                 DownloadLogs,
                 DownloadNerResults);
