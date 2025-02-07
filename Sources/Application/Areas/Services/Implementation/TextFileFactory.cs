@@ -10,9 +10,18 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
     {
         public async Task CreateAllAsync(InformationEntries infoEntries)
         {
+            const string inputPath = "C:\\Users\\matthias.mueller\\Desktop\\CAS\\Text";
+
+            var outputPath = $"{inputPath}\\Output";
+
+            if (!Directory.Exists(outputPath))
+            {
+                Directory.CreateDirectory(outputPath);
+            }
+
             var transformations = await transformer.TransformFilesAsync(
                 infoEntries,
-                @"C:\Users\matthias.mueller\Dropbox\Arbeit\Schulisches\BFH CAS KI\Transferarbeit\SIMAP\Sprint-BBL\SIMAP -Sprint-BBL-pruned");
+                inputPath);
 
             foreach (var transformation in transformations)
             {
@@ -21,7 +30,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                     ".txt");
 
                 var path = Path.Combine(
-                    @"C:\Users\matthias.mueller\Dropbox\Arbeit\Schulisches\BFH CAS KI\Transferarbeit\SIMAP\Sprint-BBL\Text",
+                    outputPath,
                     fileName);
 
                 await File.WriteAllTextAsync(path, transformation.Content);

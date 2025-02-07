@@ -35,11 +35,15 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             var i = 0;
             foreach (var transformation in transformations)
             {
-                i++;
-                documentInputs.Add(new TextDocumentInput(i.ToString(), transformation.Content));
+                var chunkedContent = SplitString(transformation.Content, 5000);
+                foreach (var cc in chunkedContent)
+                {
+                    i++;
+                    documentInputs.Add(new TextDocumentInput(i.ToString(), cc));
+                }
             }
 
-            var chunkedInputs = documentInputs.Chunk(25);
+            var chunkedInputs = documentInputs.Chunk(5);
             var resultEntries = new List<EntityRecognitionResultEntry>();
 
             foreach (var inputs in chunkedInputs)
@@ -70,6 +74,17 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             infoEntries.Add("Recognizing done..");
 
             return new EntityRecognitionResult(resultEntries);
+        }
+
+        private static List<string> SplitString(string str, int partSize)
+        {
+            List<string> parts = new List<string>();
+            for (var i = 0; i < str.Length; i += partSize)
+            {
+                parts.Add(str.Substring(i, Math.Min(partSize, str.Length - i)));
+            }
+
+            return parts;
         }
     }
 }

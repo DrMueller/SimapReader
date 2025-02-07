@@ -14,19 +14,20 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
         : IOrchestrator
     {
         public async Task<IReadOnlyCollection<EntityRecognitionResultEntryViewModel>> ProcessAsync(
-            InformationEntries infoEntries, 
+            InformationEntries infoEntries,
             string zipFilePath)
         {
             string? unzipFilePath = null;
+
             try
             {
                 var unzipResult = await unzipper.UnzipAsync(infoEntries, zipFilePath);
-                
+
                 if (!unzipResult.WasSuccess)
                 {
                     infoEntries.Add($"Unzipping to '{zipFilePath}' failed.");
                 }
-                
+
                 unzipFilePath = unzipResult.UnzipFilePath;
                 var transformedWords = await fileTransformer.TransformFilesAsync(infoEntries, unzipResult.UnzipFilePath);
                 var result = await recognizer.RecognizeAsync(infoEntries, transformedWords);
@@ -38,8 +39,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
             }
             finally
             {
-                if (!string.IsNullOrEmpty(unzipFilePath)
-                    && Directory.Exists(unzipFilePath))
+                if (!string.IsNullOrEmpty(unzipFilePath) && Directory.Exists(unzipFilePath))
                 {
                     Directory.Delete(unzipFilePath, true);
                 }

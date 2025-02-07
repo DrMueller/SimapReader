@@ -12,7 +12,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
         public Task<UnzipResult> UnzipAsync(InformationEntries infoEntries, string zipFilePath)
         {
             var tempPath = Path.GetTempPath();
-            var subDir = "SIMAPREader_Import_" + Guid.NewGuid();
+            var subDir = "SIMAPReader_Import_" + Guid.NewGuid();
             var fullDir = Path.Combine(tempPath, subDir);
 
             infoEntries.Add($"Unzipped to {fullDir}..");

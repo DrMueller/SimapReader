@@ -84,7 +84,7 @@ namespace Mmu.SimapReader.Areas.Views.Overview
             _context = context;
 
             Commands = new CommandsViewData(
-                //CreateTextFiles,
+                CreateTextFiles,
                 StartRecognition,
                 DownloadLogs,
                 DownloadNerResults);
