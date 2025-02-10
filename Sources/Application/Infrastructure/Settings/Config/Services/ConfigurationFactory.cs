@@ -13,12 +13,12 @@ namespace Mmu.SimapReader.Infrastructure.Settings.Config.Services
                 .SetBasePath(path!)
                 .AddJsonFile("appsettings.json", false, true);
 
-            //var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
-            //if (isDevelopment)
-            //{
+            if (isDevelopment)
+            {
                 configBuilder.AddUserSecrets(typeof(ConfigurationFactory).Assembly);
-            //}
+            }
 
             return configBuilder.Build();
         }

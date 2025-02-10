@@ -6,8 +6,9 @@
         {
             return str
                 .Replace("\"", string.Empty)
-                .Replace(Environment.NewLine, ",")
-                .Replace(";", " ");
+                .Replace(Environment.NewLine, " ")
+                .Replace(";", " ")
+                .Trim();
         }
     }
 }

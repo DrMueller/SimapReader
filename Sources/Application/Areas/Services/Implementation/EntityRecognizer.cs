@@ -2,6 +2,7 @@
 using Azure.AI.TextAnalytics;
 using JetBrains.Annotations;
 using Mmu.SimapReader.Areas.Models;
+using Mmu.SimapReader.Infrastructure.Extensions;
 using Mmu.SimapReader.Infrastructure.Informations;
 using Mmu.SimapReader.Infrastructure.Settings.Provisioning.Services;
 
@@ -21,7 +22,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                 new AzureKeyCredential(settingsProvider.AppSettings.TextAnalyticsApiKey));
 
             const string projectName = "CAS3";
-            const string deploymentName = "CASModel";
+            const string deploymentName = "SIMAPDeployment";
 
             var actions = new TextAnalyticsActions
             {
@@ -61,9 +62,9 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
                             foreach (var entity in documentResults.Entities)
                             {
                                 resultEntries.Add(new EntityRecognitionResultEntry(
-                                    entity.Category.ToString().Trim(),
-                                    entity.SubCategory?.Trim() ?? string.Empty,
-                                    entity.Text.Trim(),
+                                    entity.Category.ToString().Clean(),
+                                    entity.SubCategory?.Clean() ?? string.Empty,
+                                    entity.Text.Clean(),
                                     entity.ConfidenceScore));
                             }
                         }
@@ -78,7 +79,7 @@ namespace Mmu.SimapReader.Areas.Services.Implementation
 
         private static List<string> SplitString(string str, int partSize)
         {
-            List<string> parts = new List<string>();
+            var parts = new List<string>();
             for (var i = 0; i < str.Length; i += partSize)
             {
                 parts.Add(str.Substring(i, Math.Min(partSize, str.Length - i)));
