@@ -7,6 +7,7 @@
             return str
                 .Replace("\"", string.Empty)
                 .Replace(Environment.NewLine, " ")
+                .Replace("\n", " ")
                 .Replace(";", " ")
                 .Trim();
         }
